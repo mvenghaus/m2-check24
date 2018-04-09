@@ -19,7 +19,7 @@ class Cron
         $this->objectManager = $objectManager;
     }
 
-    public function run()
+    public function execute()
     {
         $this->objectManager->get(ImportOrderTask::class)->run();
         $this->objectManager->get(ProcessOrderTask::class)->run();
