@@ -21,9 +21,4 @@ class GeneralConfig extends AbstractHelper
         return $this->scopeConfig->getValue(self::XML_PATH_PARTNER_ID, ScopeInterface::SCOPE_STORE, $storeId);
     }
 
-    public function getNotificationEmail($storeId = null)
-    {
-        return $this->scopeConfig->getValue(self::XML_PATH_NOTIFICATION_EMAIL, ScopeInterface::SCOPE_STORE, $storeId);
-    }
-
 }
