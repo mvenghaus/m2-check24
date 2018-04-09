@@ -216,11 +216,14 @@ class ProcessOrderTask
         foreach ($openTransOrder->getOrderItems() as $orderItem)
         {
             $product = $this->productRepository->get($orderItem['sku'], false, $quote->getStoreId());
-            $product
-                ->setName($orderItem['name'])
-                ->setPrice($orderItem['price']);
+            $product->setName($orderItem['name']);
 
-            $quote->addProduct($product, intval($orderItem['qty']));
+            $quoteItem = $quote->addProduct($product, intval($orderItem['qty']));
+
+            $quoteItem
+                ->setCustomPrice($orderItem['price'])
+                ->setOriginalCustomPrice($orderItem['price'])
+                ->getProduct()->setIsSuperMode(true);
         }
     }
 
