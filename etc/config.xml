@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Store/etc/config.xsd">
+    <default>
+        <payment>
+            <check24>
+                <payment_action>capture</payment_action>
+                <model>Inkl\Check24\Model\Payment\Check24</model>
+                <active>1</active>
+                <title>Check24</title>
+                <order_status>processing</order_status>
+            </check24>
+        </payment>
+    </default>
+</config>

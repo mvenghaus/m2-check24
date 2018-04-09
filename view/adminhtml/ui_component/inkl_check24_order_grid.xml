@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">inkl_check24_order_grid.inkl_check24_order_data_source</item>
+            <item name="deps" xsi:type="string">inkl_check24_order_grid.inkl_check24_order_data_source</item>
+        </item>
+        <item name="spinner" xsi:type="string">inkl_check24_order_columns</item>
+    </argument>
+
+    <dataSource name="inkl_check24_order_data_source">
+        <argument name="dataProvider" xsi:type="configurableObject">
+            <argument name="class" xsi:type="string">Inkl\Check24\Ui\Component\Listing\DataProvider\Order</argument>
+            <argument name="name" xsi:type="string">inkl_check24_order_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">id</argument>
+            <argument name="requestFieldName" xsi:type="string">id</argument>
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="update_url" xsi:type="url" path="mui/index/render"/>
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="indexField" xsi:type="string">id</item>
+                    </item>
+                </item>
+            </argument>
+        </argument>
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/grid/provider</item>
+            </item>
+        </argument>
+    </dataSource>
+
+    <listingToolbar name="listing_top">
+        <filters name="listing_filters" />
+        <paging name="listing_paging"/>
+    </listingToolbar>
+
+    <columns name="inkl_check24_order_columns">
+        <column name="id">
+            <settings>
+                <label translate="true">ID</label>
+                <sorting>desc</sorting>
+            </settings>
+        </column>
+        <column name="filename">
+            <settings>
+                <label translate="true">Filename</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="processed" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <label translate="true">Processed</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Inkl\Check24\Ui\Component\Listing\Column\Order\Processed\Options"/>
+            </settings>
+        </column>
+        <column name="magento_order_increment_id" class="Inkl\Check24\Ui\Component\Listing\Column\Order\MagentoOrderIncrementId">
+            <settings>
+                <label translate="true">Magento Order</label>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+            </settings>
+        </column>
+        <column name="error" class="Inkl\Check24\Ui\Component\Listing\Column\Order\Error">
+            <settings>
+                <label translate="true">Error</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Inkl\Check24\Ui\Component\Listing\Column\Order\Processed\Options"/>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+            </settings>
+        </column>
+        <column name="updated_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <label translate="true">Updated At</label>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+            </settings>
+        </column>
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <label translate="true">Created At</label>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Inkl\Check24\Ui\Component\Listing\Column\Order\PageActions"/>
+    </columns>
+</listing>

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Inkl_Check24::order" title="Check24 Orders" module="Inkl_Check24" sortOrder="10" action="inkl_check24/order" resource="Inkl_Check24::order" parent="Magento_Sales::sales_operation"/>
+    </menu>
+</config>

@@ -1,0 +1,21 @@
+{
+	"name": "inkl/m2-check24",
+	"description": "Check24 Order Import for Magento 2",
+	"require": {
+		"inkl/address-utils": "@dev",
+		"inkl/m2-systemmail": "@dev"
+	},
+	"type": "magento2-module",
+	"version": "1.0.0",
+	"license": [
+		"OSL-3.0"
+	],
+	"autoload": {
+		"files": [
+			"registration.php"
+		],
+		"psr-4": {
+			"Inkl\\Check24\\": ""
+		}
+	}
+}
