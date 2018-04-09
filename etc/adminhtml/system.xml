@@ -20,10 +20,6 @@
 				<field id="partner_id" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
 					<label>Partner ID</label>
 				</field>
-
-				<field id="notification_email" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-					<label>Notification E-Mail</label>
-				</field>
 			</group>
 
 			<group id="ftp" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
