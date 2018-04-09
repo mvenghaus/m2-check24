@@ -31,7 +31,6 @@ class OpenTransOrder
 
     public function getInvoiceEmail()
     {
-        return 'info@inklammern.de';
         return $this->xpathQuery("//PARTY_ROLE[text()='invoice']/following-sibling::ADDRESS//EMAIL");
     }
 
