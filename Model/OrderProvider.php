@@ -30,6 +30,7 @@ class OrderProvider implements OrderProviderInterface
     {
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter('processed', 0)
+            ->addFilter('error', 1, 'neq')
             ->create();
 
         return $this->orderRepository->getList($searchCriteria);
