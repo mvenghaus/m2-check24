@@ -33,8 +33,8 @@ class ImportOrderCommand extends Command
 
     protected function configure()
     {
-        $this->setName('channels:check24:process-order')
-            ->setDescription('Process Orders');
+        $this->setName('channels:check24:import-order')
+            ->setDescription('Import Orders');
 
         parent::configure();
     }
