@@ -36,4 +36,20 @@ class OrderProvider implements OrderProviderInterface
         return $this->orderRepository->getList($searchCriteria);
     }
 
+
+    public function getByFilename($filename)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter('filename', $filename)
+            ->create();
+
+        $list = $this->orderRepository->getList($searchCriteria);
+        if ($list->getTotalCount() > 0)
+        {
+            return current($list->getItems());
+        }
+
+        return null;
+    }
+
 }
