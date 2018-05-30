@@ -134,7 +134,7 @@ class ImportOrderTask
             }
         } catch (\Exception $e)
         {
-            $this->logger->debug(sprintf('EXCEPTION!! - %s', $e->getMessage()));
+            $this->logger->error($e->getMessage());
         }
     }
 
