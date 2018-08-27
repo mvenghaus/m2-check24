@@ -42,10 +42,11 @@
                 <sorting>desc</sorting>
             </settings>
         </column>
-        <column name="filename">
+        <column name="filename" class="Inkl\Check24\Ui\Component\Listing\Column\Order\Filename">
             <settings>
                 <label translate="true">Filename</label>
                 <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
             </settings>
         </column>
         <column name="processed" component="Magento_Ui/js/grid/columns/select">
