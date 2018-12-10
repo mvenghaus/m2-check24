@@ -8,170 +8,192 @@ use Inkl\Check24\Api\OrderRepositoryInterface;
 use Inkl\Check24\Helper\Config\FtpConfig;
 use Inkl\Check24\Helper\Config\GeneralConfig;
 use Inkl\Check24\Logger\Logger;
+use Inkl\Check24\Model\Reader\OpenTransOrder;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
 class ImportOrderTask
 {
-    /** @var GeneralConfig */
-    private $generalConfig;
-    /** @var FtpConfig */
-    private $ftpConfig;
-    /** @var StoreManagerInterface */
-    private $storeManager;
-    /** @var OrderInterfaceFactory */
-    private $orderFactory;
-    /** @var OrderRepositoryInterface */
-    private $orderRepository;
-    /** @var OrderProviderInterface */
-    private $orderProvider;
-    /** @var Logger */
-    private $logger;
+	/** @var GeneralConfig */
+	private $generalConfig;
+	/** @var FtpConfig */
+	private $ftpConfig;
+	/** @var StoreManagerInterface */
+	private $storeManager;
+	/** @var OrderInterfaceFactory */
+	private $orderFactory;
+	/** @var OrderRepositoryInterface */
+	private $orderRepository;
+	/** @var OrderProviderInterface */
+	private $orderProvider;
+	/** @var OpenTransOrder */
+	private $openTransOrder;
+	/** @var Logger */
+	private $logger;
 
-    /**
-     * @param GeneralConfig $generalConfig
-     * @param FtpConfig $ftpConfig
-     * @param StoreManagerInterface $storeManager
-     * @param OrderInterfaceFactory $orderFactory
-     * @param OrderRepositoryInterface $orderRepository
-     * @param OrderProviderInterface $orderProvider
-     * @param Logger $logger
-     */
-    public function __construct(GeneralConfig $generalConfig,
-                                FtpConfig $ftpConfig,
-                                StoreManagerInterface $storeManager,
-                                OrderInterfaceFactory $orderFactory,
-                                OrderRepositoryInterface $orderRepository,
-                                OrderProviderInterface $orderProvider,
-                                Logger $logger
-    )
-    {
-        $this->generalConfig = $generalConfig;
-        $this->ftpConfig = $ftpConfig;
-        $this->storeManager = $storeManager;
-        $this->orderFactory = $orderFactory;
-        $this->orderRepository = $orderRepository;
-        $this->orderProvider = $orderProvider;
-        $this->logger = $logger;
-    }
+	/**
+	 * @param GeneralConfig $generalConfig
+	 * @param FtpConfig $ftpConfig
+	 * @param StoreManagerInterface $storeManager
+	 * @param OrderInterfaceFactory $orderFactory
+	 * @param OrderRepositoryInterface $orderRepository
+	 * @param OrderProviderInterface $orderProvider
+	 * @param OpenTransOrder $openTransOrder
+	 * @param Logger $logger
+	 */
+	public function __construct(GeneralConfig $generalConfig,
+	                            FtpConfig $ftpConfig,
+	                            StoreManagerInterface $storeManager,
+	                            OrderInterfaceFactory $orderFactory,
+	                            OrderRepositoryInterface $orderRepository,
+	                            OrderProviderInterface $orderProvider,
+	                            OpenTransOrder $openTransOrder,
+	                            Logger $logger
+	)
+	{
+		$this->generalConfig = $generalConfig;
+		$this->ftpConfig = $ftpConfig;
+		$this->storeManager = $storeManager;
+		$this->orderFactory = $orderFactory;
+		$this->orderRepository = $orderRepository;
+		$this->orderProvider = $orderProvider;
+		$this->openTransOrder = $openTransOrder;
+		$this->logger = $logger;
+	}
 
-    public function run()
-    {
-        $ftpAccounts = $this->getFtpAccounts();
-        foreach ($ftpAccounts as $ftpAccount)
-        {
-            $this->importFiles($ftpAccount);
-        }
-    }
+	public function run()
+	{
+		$ftpAccounts = $this->getFtpAccounts();
+		foreach ($ftpAccounts as $ftpAccount)
+		{
+			$this->importFiles($ftpAccount);
+		}
+	}
 
-    private function importFiles(array $ftpAccount)
-    {
+	private function importFiles(array $ftpAccount)
+	{
+		$ftp = new \Magento\Framework\Filesystem\Io\Ftp();
 
-        $ftp = new \Magento\Framework\Filesystem\Io\Ftp();
+		try
+		{
+			$ftpAccount['passive'] = true;
+			$ftpAccount['timeout'] = 20;
 
-        try
-        {
-            $ftpAccount['passive'] = true;
-            $ftpAccount['timeout'] = 20;
+			$this->logger->debug(sprintf('trying to connect to ftp %s@%s:%s', $ftpAccount['user'], $ftpAccount['host'], $ftpAccount['port']));
 
-            $this->logger->debug(sprintf('trying to connect to ftp %s@%s:%s', $ftpAccount['user'], $ftpAccount['host'], $ftpAccount['port']));
+			if ($ftp->open($ftpAccount))
+			{
+				$this->logger->debug('ftp connection established');
 
-            if ($ftp->open($ftpAccount))
-            {
-                $this->logger->debug('ftp connection established');
+				$ftp->cd('outbound');
+				foreach ($ftp->ls() as $file)
+				{
+					$filename = $file['text'];
 
-                $ftp->cd('outbound');
-                foreach ($ftp->ls() as $file)
-                {
-                    $filename = $file['text'];
+					$this->logger->debug(sprintf('checking file "%s"', $filename));
 
-                    $this->logger->debug(sprintf('checking file "%s"', $filename));
+					if (preg_match('/-ORDER\.xml$/is', $filename))
+					{
+						$fileContent = $ftp->read($filename);
+						if ($fileContent)
+						{
+							$fileContent = iconv('ISO-8859-15', 'UTF-8', $fileContent);
+							$fileContent = str_replace('ISO-8859-15', 'UTF-8', $fileContent);
 
-                    if (preg_match('/-ORDER\.xml$/is', $filename))
-                    {
-                        $fileContent = $ftp->read($filename);
-                        if ($fileContent)
-                        {
-                            $fileContent = iconv('ISO-8859-15', 'UTF-8', $fileContent);
-                            $fileContent = str_replace('ISO-8859-15', 'UTF-8', $fileContent);
+							$order = $this->orderProvider->getByFilename($filename);
+							if (!$order)
+							{
+								$this->logger->debug('creating order');
 
-                            $order = $this->orderProvider->getByFilename($filename);
-                            if (!$order)
-                            {
-                                $this->logger->debug('creating order');
+								$openTransOrder = $this->openTransOrder->load($fileContent);
 
-                                $order = $this->orderRepository->save(
-                                    $this->orderFactory->create()
-                                        ->setFilename($file['text'])
-                                        ->setContent($fileContent)
-                                );
-                            } else {
-                                $this->logger->debug('order with this filename already exists');
-                            }
+								$order = $this->orderRepository->save(
+									$this->orderFactory->create()
+										->setFilename($file['text'])
+										->setContent($fileContent)
+										->setOrderedProducts($this->getOrderedProducts($openTransOrder))
+										->setComment('')
+								);
+							} else
+							{
+								$this->logger->debug('order with this filename already exists');
+							}
 
-                            $this->logger->debug('checking if order has a valid id');
+							$this->logger->debug('checking if order has a valid id');
 
-                            if ($order->getId() > 0)
-                            {
-                                $this->logger->debug('ok -> deleting file');
+							if ($order->getId() > 0)
+							{
+								$this->logger->debug('ok -> deleting file');
 
-                                $ftp->rm($filename);
-                            } else {
-                                $this->logger->debug('error -> keeping file');
-                            }
-                        }
-                    }
+								$ftp->rm($filename);
+							} else
+							{
+								$this->logger->debug('error -> keeping file');
+							}
+						}
+					}
 
-                    if (preg_match('/-DISPATCHNOTIFICATION\.xml$/is', $filename))
-                    {
-                        $this->logger->debug('is notification file -> delete');
+					if (preg_match('/-DISPATCHNOTIFICATION\.xml$/is', $filename))
+					{
+						$this->logger->debug('is notification file -> delete');
 
-                        $ftp->rm($filename);
-                    }
-                }
+						$ftp->rm($filename);
+					}
+				}
 
-                $ftp->close();
-            }
-        } catch (\Exception $e)
-        {
-            $this->logger->error($e->getMessage());
-        }
-    }
+				$ftp->close();
+			}
+		} catch (\Exception $e)
+		{
+			$this->logger->error($e->getMessage());
+		}
+	}
 
-    private function getFtpAccounts()
-    {
-        $ftpAccounts = [];
+	private function getFtpAccounts()
+	{
+		$ftpAccounts = [];
 
-        foreach ($this->storeManager->getStores() as $store)
-        {
-            if (!$this->hasValidSettings($store))
-            {
-                continue;
-            }
+		foreach ($this->storeManager->getStores() as $store)
+		{
+			if (!$this->hasValidSettings($store))
+			{
+				continue;
+			}
 
-            $ftpAccount = [
-                'host' => $this->ftpConfig->getHost($store->getId()),
-                'user' => $this->ftpConfig->getUser($store->getId()),
-                'password' => $this->ftpConfig->getPassword($store->getId()),
-                'port' => $this->ftpConfig->getPort($store->getId()),
-            ];
+			$ftpAccount = [
+				'host' => $this->ftpConfig->getHost($store->getId()),
+				'user' => $this->ftpConfig->getUser($store->getId()),
+				'password' => $this->ftpConfig->getPassword($store->getId()),
+				'port' => $this->ftpConfig->getPort($store->getId()),
+			];
 
-            $key = implode('#', $ftpAccount);
-            if (!isset($ftpAccounts[$key]))
-            {
-                $ftpAccounts[$key] = $ftpAccount;
-            }
-        }
+			$key = implode('#', $ftpAccount);
+			if (!isset($ftpAccounts[$key]))
+			{
+				$ftpAccounts[$key] = $ftpAccount;
+			}
+		}
 
-        return $ftpAccounts;
-    }
+		return $ftpAccounts;
+	}
 
-    private function hasValidSettings(StoreInterface $store)
-    {
-        return ($this->generalConfig->isEnabled($store->getId()) &&
-            $this->ftpConfig->getHost($store->getId()) &&
-            $this->ftpConfig->getUser($store->getId()) &&
-            $this->ftpConfig->getPassword($store->getId()) &&
-            $this->ftpConfig->getPort($store->getId()));
-    }
+	private function hasValidSettings(StoreInterface $store)
+	{
+		return ($this->generalConfig->isEnabled($store->getId()) &&
+			$this->ftpConfig->getHost($store->getId()) &&
+			$this->ftpConfig->getUser($store->getId()) &&
+			$this->ftpConfig->getPassword($store->getId()) &&
+			$this->ftpConfig->getPort($store->getId()));
+	}
+
+	private function getOrderedProducts(OpenTransOrder $openTransOrder)
+	{
+		$orderedProducts = [];
+		foreach ($openTransOrder->getOrderItems() as $orderItem)
+		{
+			$orderedProducts[] = sprintf('%dx %s (%s)', $orderItem['qty'], $orderItem['name'], $orderItem['sku']);
+		}
+
+		return implode("\n", $orderedProducts);
+	}
 }

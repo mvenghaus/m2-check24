@@ -22,6 +22,8 @@ class InstallSchema implements InstallSchemaInterface
             ->addColumn('processed', Table::TYPE_INTEGER, 1, ['default' => 0], 'Processed')
             ->addColumn('magento_order_id', Table::TYPE_INTEGER, null, [], 'Magento Order ID')
             ->addColumn('magento_order_increment_id', Table::TYPE_TEXT, 32, [], 'Magento Order Increment ID')
+	        ->addColumn('ordered_products', Table::TYPE_TEXT, null, ['default' => 0], 'Ordered Products')
+	        ->addColumn('comment', Table::TYPE_TEXT, null, ['default' => 0], 'Comment')
             ->addColumn('error', Table::TYPE_INTEGER, 1, ['default' => 0], 'Error')
             ->addColumn('error_message', Table::TYPE_TEXT, null, [], 'Error Message')
             ->addColumn('updated_at', Table::TYPE_DATETIME, null, [], 'Updated At')

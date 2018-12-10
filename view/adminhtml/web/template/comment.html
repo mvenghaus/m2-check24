@@ -1,0 +1,16 @@
+<style>
+	.cursor-pointer { cursor: pointer; }
+</style>
+<div class="data-grid-cell-content">
+
+	<div class="data-grid-cell-content-comment" data-bind="attr: { 'data-id' : $row().id }, text: $row().comment"/>
+
+	<div class="data-grid-cell-content-comment-modal" data-bind="attr: { 'data-id' : $row().id }" style="display:none;">
+		<div class="admin__form-field-control">
+			<input class="admin__control-text" type="text" data-bind="value: $row().comment">
+		</div>
+
+		<br>
+		<button data-bind="click: function() { $col.save($row().id, $row().comment_save_url); }">Speichern</button>
+	</div>
+</div>

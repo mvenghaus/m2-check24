@@ -5,65 +5,77 @@ namespace Inkl\Check24\Api\Data;
 interface OrderInterface
 {
 
-    const KEY_ID = 'id';
-    const KEY_FILENAME = 'filename';
-    const KEY_CONTENT = 'content';
-    const KEY_PROCESSED = 'processed';
-    const KEY_MAGENTO_ORDER_ID = 'magento_order_id';
-    const KEY_MAGENTO_ORDER_INCREMENT_ID = 'magento_order_increment_id';
-    const KEY_ERROR = 'error';
-    const KEY_ERROR_MESSAGE = 'error_message';
-    const KEY_UPDATED_AT = 'updated_at';
-    const KEY_CREATED_AT = 'created_at';
+	const KEY_ID = 'id';
+	const KEY_FILENAME = 'filename';
+	const KEY_CONTENT = 'content';
+	const KEY_PROCESSED = 'processed';
+	const KEY_MAGENTO_ORDER_ID = 'magento_order_id';
+	const KEY_MAGENTO_ORDER_INCREMENT_ID = 'magento_order_increment_id';
+	const KEY_ORDERED_PRODUCTS = 'ordered_products';
+	const KEY_COMMENT = 'comment';
+	const KEY_ERROR = 'error';
+	const KEY_ERROR_MESSAGE = 'error_message';
+	const KEY_UPDATED_AT = 'updated_at';
+	const KEY_CREATED_AT = 'created_at';
 
-    /** @return $this */
-    public function setId($id);
+	/** @return $this */
+	public function setId($id);
 
-    public function getId();
+	public function getId();
 
-    /** @return $this */
-    public function setFilename($filename);
+	/** @return $this */
+	public function setFilename($filename);
 
-    public function getFilename();
+	public function getFilename();
 
-    /** @return $this */
-    public function setContent($content);
+	/** @return $this */
+	public function setContent($content);
 
-    public function getContent();
+	public function getContent();
 
-    /** @return $this */
-    public function setProcessed($processed);
+	/** @return $this */
+	public function setProcessed($processed);
 
-    public function getProcessed();
+	public function getProcessed();
 
-    /** @return $this */
-    public function setMagentoOrderId($magentoOrderId);
+	/** @return $this */
+	public function setMagentoOrderId($magentoOrderId);
 
-    public function getMagentoOrderId();
+	public function getMagentoOrderId();
 
-    /** @return $this */
-    public function setMagentoOrderIncrementId($magentoOrderIncrementId);
+	/** @return $this */
+	public function setMagentoOrderIncrementId($magentoOrderIncrementId);
 
-    public function getMagentoOrderIncrementId();
+	public function getMagentoOrderIncrementId();
 
-    /** @return $this */
-    public function setError($error);
+	/** @return $this */
+	public function setOrderedProducts($error);
 
-    public function getError();
+	public function getOrderedProducts();
 
-    /** @return $this */
-    public function setErrorMessage($errorMessage);
+	/** @return $this */
+	public function setComment($comment);
 
-    public function getErrorMessage();
+	public function getComment();
 
-    /** @return $this */
-    public function setUpdatedAt($updatedAt);
+	/** @return $this */
+	public function setError($error);
 
-    public function getUpdatedAt();
+	public function getError();
 
-    /** @return $this */
-    public function setCreatedAt($createdAt);
+	/** @return $this */
+	public function setErrorMessage($errorMessage);
 
-    public function getCreatedAt();
+	public function getErrorMessage();
+
+	/** @return $this */
+	public function setUpdatedAt($updatedAt);
+
+	public function getUpdatedAt();
+
+	/** @return $this */
+	public function setCreatedAt($createdAt);
+
+	public function getCreatedAt();
 
 }

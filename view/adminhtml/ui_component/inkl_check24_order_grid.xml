@@ -31,7 +31,7 @@
     </dataSource>
 
     <listingToolbar name="listing_top">
-        <filters name="listing_filters" />
+        <filters name="listing_filters"/>
         <paging name="listing_paging"/>
     </listingToolbar>
 
@@ -64,6 +64,13 @@
                 <bodyTmpl>ui/grid/cells/html</bodyTmpl>
             </settings>
         </column>
+        <column name="ordered_products" class="Inkl\Check24\Ui\Component\Listing\Column\Order\OrderedProducts">
+            <settings>
+                <label translate="true">Ordered Products</label>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+            </settings>
+        </column>
         <column name="error" class="Inkl\Check24\Ui\Component\Listing\Column\Order\Error">
             <settings>
                 <label translate="true">Error</label>
@@ -85,6 +92,11 @@
                 <label translate="true">Created At</label>
                 <filter>dateRange</filter>
                 <dataType>date</dataType>
+            </settings>
+        </column>
+        <column name="comment" class="Inkl\Check24\Ui\Component\Listing\Column\Order\Comment" component="Inkl_Check24/js/grid/columns/comment">
+            <settings>
+                <label translate="true">Comment</label>
             </settings>
         </column>
         <actionsColumn name="actions" class="Inkl\Check24\Ui\Component\Listing\Column\Order\PageActions"/>
